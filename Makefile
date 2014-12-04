@@ -1,14 +1,14 @@
 test:
-	mocha --reporter spec --bail --check-leaks
+	./node_modules/.bin/mocha --reporter spec --bail --check-leaks
 
 watch-coverage:
-	mocha -w --require blanket --reporter mocha-text-cov
+	./node_modules/.bin/mocha -w --require blanket --reporter mocha-text-cov
 
 watch:
-	mocha -w
+	./node_modules/.bin/mocha -w
 
 coverage:
-	mocha --require blanket -R html-cov > coverage.html
+	./node_modules/.bin/mocha --require blanket -R html-cov > coverage.html
 
 travis-test:
 	NODE_ENV=test YOURPACKAGE_COVERAGE=1 ./node_modules/.bin/mocha \

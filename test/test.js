@@ -1,4 +1,6 @@
-var path = require('path'),
+var
+    log = require('bunyan').log = require('bunyan').createLogger({name: 'test'}),
+    path = require('path'),
     should = require('should'),
     sinon = require('sinon'),
     Sanji = require('../lib/sanji'),
@@ -41,27 +43,40 @@ describe('Bundle', function() {
 
 describe('Sanji', function() {
 
-  var b, s, retry, mockP;
+  var b, s, p, retry, mockP;
 
   beforeEach(function() {
+    p = new Publish();
+    p.direct = {
+      post: mockP,
+      delete: mockP,
+      get: mockP,
+      put: mockP
+    };
     b = new Bundle(path.join(__dirname, 'mock'));
-    s = new Sanji({bundle: b});
+    s = new Sanji({
+      bundle: b,
+      publish: p
+    });
+
     retry = 5;
-    mockP = function() {
+    mockP = function mockP() {
       return new Promise(function (resolve, reject) {
-        if (retry-- === 0) {
-          retry = 5;
-          return resolve();
-        }
-        return reject('fail');
+        resolve({
+          code: 200,
+          data: {
+            test: 'ok'
+          }
+        });
+        // if (retry-- === 0) {
+        //   retry = 5;
+        //   return resolve();
+        // }
+        // return reject('fail');
       });
     };
 
-    s.publish = new Publish();
-    s.publish.direct = {
-      post: mockP,
-      delete: mockP
-    };
+
   });
 
   describe('create a Sanji instance', function() {
@@ -72,9 +87,10 @@ describe('Sanji', function() {
 
   describe('deregister to controller', function() {
     it('should deregister to controller', function() {
-      return s.deregister(retry, 3, 10).catch(function() {
-        throw 'error';
-      });
+      return s.deregister(retry, 3, 10)
+        .catch(function(e) {
+          throw e;
+        });
     });
   });
 
@@ -86,9 +102,10 @@ describe('Sanji', function() {
         });
       };
 
-      return s.register(retry, 3, 0).catch(function() {
-        throw 'error';
-      });
+      return s.register(retry, 0, 0)
+        .catch(function(e) {
+          throw e;
+        });
     });
   });
 
@@ -96,7 +113,7 @@ describe('Sanji', function() {
     it('should return registration message', function() {
       var info = s.getRegistrationInfo();
       info.resources.forEach(function(endpoint) {
-        endpoint.resource.indexOf(':').should.be.equal(-1);
+        should(endpoint.indexOf(':')).be.equal(-1);
       });
     });
   });
@@ -152,12 +169,19 @@ describe('Publish', function() {
   var publish;
 
   beforeEach(function() {
+
     publish = new Publish({
       connection: {
         tunnel: 'mock_tunnel'
       },
       session: new Session()
     });
+
+    publish.session.create = function() {
+      return new Promise(function (resolve) {
+        return resolve();
+      });
+    };
   });
 
   describe('create a Publish instance', function() {
@@ -177,7 +201,7 @@ describe('Publish', function() {
           publish.connection = {
             publish: function(topic, message) {
               topic.should.be.equal('/controller');
-              return new Promise(function (resolve, reject) {
+              return new Promise(function (resolve) {
                 return resolve();
               });
             }
@@ -320,9 +344,10 @@ describe('Session', function() {
     beforeEach(function() {
       session = new Session();
       m = new Message({
+        id: 1,
         resource: '/test/message',
         method: 'get'
-      });
+      }, false);
     });
 
     afterEach(function() {
@@ -331,27 +356,31 @@ describe('Session', function() {
     });
 
     it('should be able to create', function() {
-      var age = 200000;
-      s = session.create(m, age);
+      var age = 200000,
+          promise;
+
+      promise = session.create(m, age);
+      promise.should.be.instanceOf(Promise);
+
+      s = session.list[1];
       s.status.should.be.equal('CREATED');
       s.message.should.be.eql(m);
       s.age.should.be.equal(age);
-      s.deferred.promise.should.be.instanceOf(Promise);
     });
 
     it('should not be able to create with exist id', function() {
       m.id = 1;
       session.create(m);
-      (function(){
-        session.create(m);
-      }).should.throw('Message id is exist!');
+      session.create(m).catch(function(e) {
+        e.message.should.be.eql('Message id is exist!');
+      });
     });
 
     it('should be able to be resolved', function(done) {
       s = session.create(m);
-      var respMsg = new Message({id: m.id, data: 'test'}, false);
+      var respMsg = new Message({id: m.id, code: 200, data: 'test'}, false);
 
-      s.deferred.promise.then(function(msg) {
+      s.then(function(msg) {
         msg.should.be.eql(respMsg);
         done();
       });
@@ -363,31 +392,29 @@ describe('Session', function() {
 
     it('should be able to be timeout', function(done) {
       s = session.create(m, 0.5);
-      s.deferred.promise
-      .then(function() {
-        done(new Error('Not fire timeout.'));
-      })
-      .catch(function(e) {
-        e.should.be.instanceOf(TimeoutError);
-        done();
-      });
+      s.then(function() {
+          done(new Error('Not fire timeout.'));
+        })
+        .catch(function(e) {
+          e.should.be.instanceOf(TimeoutError);
+          done();
+        });
     });
 
     it('should be not able to be timeout if it\'s already fulfilled', function(done) {
       s = session.create(m, 0.1);
-      var spy = s.deferred.promise.isFulfilled = sinon.spy(function() {
+      var spy = s.isFulfilled = sinon.spy(function() {
         done();
         return true;
       });
 
-      s.deferred.promise
-      .then(function() {
-        spy.calledOnce.should.be.equal(true);
-      })
-      .catch(function(e) {
-        e.should.be.instanceOf(TimeoutError);
-        done();
-      });
+      s.then(function() {
+          spy.calledOnce.should.be.equal(true);
+        })
+        .catch(function(e) {
+          e.should.be.instanceOf(TimeoutError);
+          done();
+        });
     });
   });
 

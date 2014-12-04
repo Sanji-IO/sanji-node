@@ -1,5 +1,6 @@
-# Caution! This repo is under construction!
+Sanji Node.js SDK
+=================
 
 ## Installation
 
-    $ npm install git@github.com:Sanji-IO/sanji-node.git#{semantic-version} --save
+    $ npm install sanji

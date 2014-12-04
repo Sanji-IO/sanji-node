@@ -1,12 +1,12 @@
 {
   "name": "sanji",
   "version": "0.0.0",
-  "description": "Sanji SDK (Nodejs version)",
+  "description": "Sanji SDK (Node.js version)",
   "main": "index.js",
   "scripts": {
     "test": "make travis-test"
   },
-  "author": "",
+  "author": "YuLun Shih",
   "license": "",
   "dependencies": {
     "bluebird": "^2.3.10",
