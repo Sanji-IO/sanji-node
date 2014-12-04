@@ -400,22 +400,6 @@ describe('Session', function() {
           done();
         });
     });
-
-    it('should be not able to be timeout if it\'s already fulfilled', function(done) {
-      s = session.create(m, 0.1);
-      var spy = s.isFulfilled = sinon.spy(function() {
-        done();
-        return true;
-      });
-
-      s.then(function() {
-          spy.calledOnce.should.be.equal(true);
-        })
-        .catch(function(e) {
-          e.should.be.instanceOf(TimeoutError);
-          done();
-        });
-    });
   });
 
   describe('resolve a session', function() {
