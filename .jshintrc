@@ -1,0 +1,35 @@
+{
+  "node": true,
+  "browser": false,
+  "esnext": true,
+  "bitwise": true,
+  "camelcase": true,
+  "curly": true,
+  "eqeqeq": true,
+  "immed": true,
+  "latedef": true,
+  "newcap": false,
+  "noarg": true,
+  "regexp": true,
+  "undef": true,
+  "strict": false,
+  "trailing": true,
+  "smarttabs": true,
+  "expr": true,  // MOCHA
+  "globals": {
+    "angular": false,
+    "device": false,
+    "google": false,
+    "jQuery": false,
+    "$": false,
+    "_": true,
+    /* MOCHA */
+    "describe": false,
+    "it": false,
+    "before": false,
+    "beforeEach": false,
+    "after": false,
+    "afterEach": false,
+    "Promise" : true
+  }
+}

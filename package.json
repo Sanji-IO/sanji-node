@@ -1,0 +1,37 @@
+{
+  "name": "sanji",
+  "version": "0.0.0",
+  "description": "Sanji SDK (Nodejs version)",
+  "main": "index.js",
+  "scripts": {
+    "test": "make travis-test"
+  },
+  "author": "",
+  "license": "",
+  "dependencies": {
+    "bluebird": "^2.3.10",
+    "bunyan": "^0.22.3",
+    "lodash": "^2.4.1",
+    "moment": "^2.8.3",
+    "mqtt": "^0.3.8",
+    "qs": "^2.3.3",
+    "xregexp": "git+https://git@github.com/slevithan/xregexp.git"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Sanji-IO/sanji-node.git"
+  },
+  "devDependencies": {
+    "blanket": "^1.1.6",
+    "coveralls": "^2.11.2",
+    "mocha": "^2.0.1",
+    "mocha-lcov-reporter": "0.0.1",
+    "should": "^4.1.0",
+    "sinon": "^1.11.1"
+  },
+  "config": {
+    "blanket": {
+      "pattern": "sanji-node/lib"
+    }
+  }
+}

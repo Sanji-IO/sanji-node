@@ -1,0 +1,7 @@
+language: node_js
+node_js:
+  - "0.10"
+notifications:
+  slack:
+    rooms:
+      - sys:yeTvjm0bw1tX6MBWrfkVL5RG#travis
