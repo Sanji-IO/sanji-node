@@ -1,9 +1,9 @@
 var
-    log = require('bunyan').log = require('bunyan').createLogger({name: 'test'}),
+    log = require('sanji-logger')('sanji'),
     path = require('path'),
     should = require('should'),
     sinon = require('sinon'),
-    Sanji = require('../lib/sanji'),
+    Sanji = require('../index'),
     Bundle = require('../lib/bundle'),
     Publish = require('../lib/publish'),
     Session = require('../lib/session'),
