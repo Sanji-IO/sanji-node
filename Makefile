@@ -11,7 +11,7 @@ coverage:
 	./node_modules/.bin/mocha --require blanket -R html-cov > coverage.html
 
 travis-test:
-	NODE_ENV=test YOURPACKAGE_COVERAGE=1 ./node_modules/.bin/mocha \
+	NODE_ENV=production YOURPACKAGE_COVERAGE=1 ./node_modules/.bin/mocha \
 	  --require blanket \
 	  --reporter mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js
 
