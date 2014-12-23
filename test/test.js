@@ -585,6 +585,13 @@ describe('Route', function() {
       matched.id.should.be.equal('5566');
       matched.haha.should.be.equal('1234');
       matched.querystring.should.be.equal('abc=123&&def=456');
+
+      // case 3: param with char ['-', '_']
+      matched = r.resourceRegex.exec('test/hello/1_2-3_4-5/world/1234' +
+        '?abc=1_2-3&&def=456');
+      matched.id.should.be.equal('1_2-3_4-5');
+      matched.haha.should.be.equal('1234');
+      matched.querystring.should.be.equal('abc=1_2-3&&def=456');
     });
   });
 
