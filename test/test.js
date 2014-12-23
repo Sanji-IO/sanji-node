@@ -1,7 +1,9 @@
 var
     log = require('sanji-logger')('sanji'),
     path = require('path'),
-    should = require('should'),
+    chai = require('chai'),
+    should = chai.should(),
+    expect = chai.expect,
     sinon = require('sinon'),
     Sanji = require('../index'),
     Bundle = require('../lib/bundle'),
@@ -113,7 +115,7 @@ describe('Sanji', function() {
     it('should return registration message', function() {
       var info = s.getRegistrationInfo();
       info.resources.forEach(function(endpoint) {
-        should(endpoint.indexOf(':')).be.equal(-1);
+        endpoint.indexOf(':').should.be.equal(-1);
       });
     });
   });
@@ -295,8 +297,15 @@ describe('Publish', function() {
         data: {key: 'value'}
       });
       p.calledOnce.should.be.true;
+      console.log(p.args[0][1]);
+      // console.log(respMsg);
+      // console.log(p.args[0]);
       p.args[0][0].should.be.equal('/controller');
-      p.args[0][1].should.be.eql(respMsg);
+      p.args[0][1].id.should.be.equal(respMsg.id);
+      p.args[0][1].code.should.be.equal(respMsg.code);
+      p.args[0][1].method.should.be.equal(respMsg.method);
+      p.args[0][1].resource.should.be.equal(respMsg.resource);
+      p.args[0][1].sign.should.be.deep.equal(respMsg.sign);
     });
 
     it('should not have data if null is assigned', function() {
@@ -306,7 +315,11 @@ describe('Publish', function() {
       });
       p.calledOnce.should.be.true;
       p.args[0][0].should.be.equal('/controller');
-      p.args[0][1].should.be.eql(respMsg);
+      p.args[0][1].id.should.be.equal(respMsg.id);
+      p.args[0][1].code.should.be.equal(respMsg.code);
+      p.args[0][1].method.should.be.equal(respMsg.method);
+      p.args[0][1].resource.should.be.equal(respMsg.resource);
+      p.args[0][1].sign.should.be.deep.equal(respMsg.sign);
     });
 
     it('should push sign into exist sign array', function() {
@@ -316,7 +329,11 @@ describe('Publish', function() {
       p.calledOnce.should.be.true;
       p.args[0][0].should.be.equal('/controller');
       respMsg.sign = ['before_sign', 'test_name'];
-      p.args[0][1].should.be.eql(respMsg);
+      p.args[0][1].id.should.be.equal(respMsg.id);
+      p.args[0][1].code.should.be.equal(respMsg.code);
+      p.args[0][1].method.should.be.equal(respMsg.method);
+      p.args[0][1].resource.should.be.equal(respMsg.resource);
+      p.args[0][1].sign.should.be.deep.equal(respMsg.sign);
     });
   });
 });
@@ -405,7 +422,7 @@ describe('Session', function() {
   describe('resolve a session', function() {
     it('should be resolve nothing if list is empty', function() {
       var r = session.resolve(new Message());
-      should(r).be.equal(null);
+      expect(r).be.equal(null);
     });
 
     it('should just delete session if it\'s already been resolved', function() {
@@ -519,7 +536,7 @@ describe('Message', function() {
 
     it('should be return match non results', function() {
       var m = reqM.match(new Route('/noroute/resource/:id'));
-      should(m).be.null;
+      expect(m).be.null;
     });
   });
 });
@@ -625,13 +642,13 @@ describe('Router', function() {
     it('should return if no routes been matched', function() {
       // var mock = sinon.mock(null);
       r.get('/123', cb);
-      should(r.dispatch(msg)).be.equal(undefined);
+      expect(r.dispatch(msg)).be.equal(undefined);
     });
 
     it('should return if no method in matched route', function() {
       r.get('/test/hello/:id/name/:name', cb);
       msg.method = 'post';
-      should(r.dispatch(msg)).be.equal(undefined);
+      expect(r.dispatch(msg)).be.equal(undefined);
     });
   });
 });
