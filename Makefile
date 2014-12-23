@@ -15,4 +15,7 @@ travis-test:
 	  --require blanket \
 	  --reporter mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js
 
+version-patch: test
+	npm version patch && git push && git push --tags && npm publish
+
 .PHONY: test watch-coverage watch coverage travis-test
