@@ -297,9 +297,6 @@ describe('Publish', function() {
         data: {key: 'value'}
       });
       p.calledOnce.should.be.true;
-      console.log(p.args[0][1]);
-      // console.log(respMsg);
-      // console.log(p.args[0]);
       p.args[0][0].should.be.equal('/controller');
       p.args[0][1].id.should.be.equal(respMsg.id);
       p.args[0][1].code.should.be.equal(respMsg.code);
