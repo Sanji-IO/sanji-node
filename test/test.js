@@ -1,20 +1,18 @@
-var
-    log = require('sanji-logger')('sanji'),
-    path = require('path'),
-    chai = require('chai'),
-    should = chai.should(),
-    expect = chai.expect,
-    sinon = require('sinon'),
-    Sanji = require('../index'),
-    Bundle = require('../lib/bundle'),
-    Publish = require('../lib/publish'),
-    Session = require('../lib/session'),
-    Message = require('../lib/message'),
-    Router = require('../lib/router').Router,
-    Route = require('../lib/router').Route,
-    trimResource = require('../lib/router').trimResource,
-    parseQuerystring = require('../lib/router').parseQuerystring,
-    Promise = require('bluebird');
+var path = require('path');
+var chai = require('chai');
+var should = chai.should();
+var expect = chai.expect;
+var sinon = require('sinon');
+var Sanji = require('../index');
+var Bundle = require('../lib/bundle');
+var Publish = require('../lib/publish');
+var Session = require('../lib/session');
+var Message = require('../lib/message');
+var Router = require('../lib/router').Router;
+var Route = require('../lib/router').Route;
+var trimResource = require('../lib/router').trimResource;
+var parseQuerystring = require('../lib/router').parseQuerystring;
+var Promise = require('bluebird');
 
 describe('Bundle', function() {
   var b = new Bundle(path.join(__dirname, 'mock'));
