@@ -1,6 +1,6 @@
 {
   "name": "sanji",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Sanji SDK (Node.js version)",
   "main": "index.js",
   "scripts": {
