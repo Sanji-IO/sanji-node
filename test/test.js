@@ -3,6 +3,7 @@ var chai = require('chai');
 var should = chai.should();
 var expect = chai.expect;
 var sinon = require('sinon');
+var XRegExp = require('xregexp');
 var Sanji = require('../index');
 var Bundle = require('../lib/bundle');
 var Publish = require('../lib/publish');
@@ -547,8 +548,8 @@ describe('trimResource', function() {
 describe('parseQuerystring', function() {
   var r = new Route('  /test/hello/:id/world/:haha   ');
   it('should build query params from querystring', function() {
-    var matched = r.resourceRegex.exec('test/hello/5566/world/1234' +
-      '?abc=123&&def=456');
+    var matched = XRegExp.exec('test/hello/5566/world/1234' +
+      '?abc=123&&def=456', r.resourceRegex);
     var result = parseQuerystring(matched.querystring);
     result.abc.should.be.equal('123');
     result.def.should.be.equal('456');
@@ -569,21 +570,21 @@ describe('Route', function() {
 
     it('should have correct resourceRegex', function() {
       //  case 1: param without querystring
-      var matched = r.resourceRegex.exec('test/hello/5566/world/1234');
+      var matched = XRegExp.exec('test/hello/5566/world/1234', r.resourceRegex);
       matched.id.should.be.equal('5566');
       matched.haha.should.be.equal('1234');
       should.not.exist(matched.querystring);
 
       // case 2: param with querystring
-      matched = r.resourceRegex.exec('test/hello/5566/world/1234' +
-        '?abc=123&&def=456');
+      matched = XRegExp.exec('test/hello/5566/world/1234' +
+        '?abc=123&&def=456', r.resourceRegex);
       matched.id.should.be.equal('5566');
       matched.haha.should.be.equal('1234');
       matched.querystring.should.be.equal('abc=123&&def=456');
 
       // case 3: param with char ['-', '_']
-      matched = r.resourceRegex.exec('test/hello/1_2-3_4-5/world/1234' +
-        '?abc=1_2-3&&def=456');
+      matched = XRegExp.exec('test/hello/1_2-3_4-5/world/1234' +
+        '?abc=1_2-3&&def=456', r.resourceRegex);
       matched.id.should.be.equal('1_2-3_4-5');
       matched.haha.should.be.equal('1234');
       matched.querystring.should.be.equal('abc=1_2-3&&def=456');
