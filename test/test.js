@@ -164,6 +164,44 @@ describe('Sanji', function() {
       }
     });
   });
+
+  describe('dispatch event', function() {
+    var spies, spyFunc, spyCount = 5;
+    var msg = new Message({
+      code: 200,
+      method: 'get',
+      resource: '/test',
+      data: {
+        thisisamock: 'mock'
+      }
+    }, false);
+
+    beforeEach(function() {
+      spies = [];
+      spyFunc = function(message) {};
+
+      for (var i = 0; i < spyCount; i++) {
+        spies.push(sinon.spy(spyFunc));
+      }
+
+      s.router.dispatch = function() {
+        return [{
+          callbacks: spies,
+          message: new Message({})
+        }];
+      };
+    });
+
+    it('should be interrupt if next() not be called', function() {
+      spies[0] = sinon.spy();
+      s.dispatchRequest(msg);
+      // check they are as expect execution sequence
+      spies[0].calledOnce.should.be.true;
+      for (var i = 1; i < spyCount; i++) {
+        spies[i].called.should.be.false;
+      }
+    });
+  });
 });
 
 describe('Publish', function() {
@@ -594,7 +632,7 @@ describe('Route', function() {
   describe('route a resource in methods', function() {
     var r = new Route('/test/hello/:id/');
     it('should be dispatch correctly', function() {
-      var cb = function() {};
+      var cb = function(req, res, next) {};
       r.get(cb).post(cb);  // chainable api
 
       // case 1: found
@@ -620,8 +658,8 @@ describe('Router', function() {
   });
 
   describe('route a message in routes', function() {
-    var r, msg;
-    var cb = function() {};
+    var r, msg, eventMsg;
+    var cb = function(req, res, next) {};
 
     beforeEach(function() {
       r = new Router();
@@ -629,9 +667,17 @@ describe('Router', function() {
         resource: '/test/hello/1/name/myname?q=1',
         method: 'get'
       });
+      eventMsg = new Message({
+        resource: '/web/notification',
+        method: 'get',
+        code: 200,
+        data: {
+          thisisamock: 'mock'
+        }
+      });
     });
 
-    it('should be able to dispatch correctly', function() {
+    it('should be able to dispatch correctly (request)', function() {
       r.get('/test/hello/:id/name/:name', cb);
       var result = r.dispatch(msg);
       result.length.should.be.equal(1);
@@ -642,8 +688,13 @@ describe('Router', function() {
       result[0].callbacks[0].callback.should.be.equal(cb);
     });
 
+    it('should be able to dispatch correctly (event)', function() {
+      r.get('/web/notification', cb);
+      var result = r.dispatch(eventMsg);
+      result.length.should.be.equal(1);
+    });
+
     it('should return if no routes been matched', function() {
-      // var mock = sinon.mock(null);
       r.get('/123', cb);
       expect(r.dispatch(msg)).be.equal(undefined);
     });
