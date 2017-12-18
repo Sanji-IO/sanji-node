@@ -694,6 +694,14 @@ describe('Router', function() {
       result.length.should.be.equal(1);
     });
 
+    it('should be able to dispatch correctly in multiple routes', function() {
+      r.post('/wrong/route/here', cb);
+      r.get('/web/notification', cb);
+      r.get('/no/route/here', cb);
+      var result = r.dispatch(eventMsg);
+      result.length.should.be.equal(1);
+    });
+
     it('should return if no routes been matched', function() {
       r.get('/123', cb);
       expect(r.dispatch(msg)).be.equal(undefined);
